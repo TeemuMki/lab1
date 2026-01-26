@@ -6,11 +6,30 @@ public abstract class Car implements Movable {
     protected double currentSpeed; // The current speed of the car
     protected Color color; // Color of the car
     protected String modelName; // The car model name
+
+    protected enum Direction {N, E, S, W}; // Possible directions of the car: North, East, South, West
+    protected Direction currentDirection = Direction.N; // Represents the car's current direction
+    protected double x, y; // Represents the cars x and y coordinates
+
+    /*
     protected double xCoordinate; // The cars X coordinate, negative X denotes left movement, positive right
     protected double yCoordinate; // The cars Y coordinate
     protected int direction = 1; // Represents the direction of the car, -1 = South 0 = West, 1 = North, 2 = East
+    */
 
-    protected Car() {}
+    protected Car(int nrDoors, double enginePower, Color color, String modelName) {
+        this.nrDoors = nrDoors;
+        this.enginePower = enginePower;
+        this.color = color;
+        this.modelName = modelName;
+        this.currentSpeed = 0;
+
+        this.currentDirection = Direction.N;
+        this.x = this.y = 0.0;
+        stopEngine();
+    }
+
+    //protected Car() {}
 
     public int getNrDoors(){
         return nrDoors;
@@ -42,6 +61,37 @@ public abstract class Car implements Movable {
 
     @Override
     public void move() {
+        switch (currentDirection) {
+            case N -> y += currentSpeed;
+            case E -> x += currentSpeed;
+            case S -> y -= currentSpeed;
+            case W -> x -= currentSpeed;
+        }
+    }
+
+    @Override
+    public void turnLeft() {
+        switch (currentDirection) {
+            case N -> currentDirection = Direction.W;
+            case E -> currentDirection = Direction.N;
+            case S -> currentDirection = Direction.E;
+            case W -> currentDirection = Direction.S;
+        }
+    }
+
+    @Override
+    public void turnRight() {
+        switch (currentDirection) {
+            case N -> currentDirection = Direction.E;
+            case E -> currentDirection = Direction.S;
+            case S -> currentDirection = Direction.W;
+            case W -> currentDirection = Direction.N;
+        }
+    }
+
+    /*
+    @Override
+    public void move() {
         switch(direction) {
             case -1 -> yCoordinate -= currentSpeed;
             case 0 -> xCoordinate -= currentSpeed;
@@ -69,6 +119,7 @@ public abstract class Car implements Movable {
             case 2 -> direction = -1;
         }
     }
+     */
 
     public void gas(double amount){
         if(amount < 0 || amount > 1) throw new IllegalArgumentException("Input outside of allowed range [0,1]");
@@ -89,4 +140,42 @@ public abstract class Car implements Movable {
     protected void decrementSpeed(double amount){
         currentSpeed = Math.max(getCurrentSpeed() - speedFactor() * amount,0);
     }
+
+
+    /*
+
+    protected void incrementSpeed(double amount){
+        currentSpeed += speedFactor() * amount;
+    }
+
+    protected void decrementSpeed(double amount){
+        currentSpeed -= speedFactor() * amount;
+    }
+
+    private double limitInterval(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public void gas(double amount){
+        double oldSpeed = currentSpeed;
+        double validAmount = limitInterval(amount, 0, 1);
+
+        incrementSpeed(validAmount);
+
+        currentSpeed = Math.max(oldSpeed, currentSpeed);
+        currentSpeed = limitInterval(currentSpeed, 0, enginePower);
+    }
+
+    public void brake(double amount){
+        double oldSpeed = currentSpeed;
+        double validAmount = limitInterval(amount, 0, 1);
+
+        decrementSpeed(validAmount);
+
+        currentSpeed = Math.min(oldSpeed, currentSpeed);
+        currentSpeed = limitInterval(currentSpeed, 0, enginePower);
+    }
+
+    */
+
 }
