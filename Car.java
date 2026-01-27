@@ -11,12 +11,6 @@ public abstract class Car implements Movable {
     protected Direction currentDirection = Direction.N; // Represents the car's current direction
     protected double x, y; // Represents the cars x and y coordinates
 
-    /*
-    protected double xCoordinate; // The cars X coordinate, negative X denotes left movement, positive right
-    protected double yCoordinate; // The cars Y coordinate
-    protected int direction = 1; // Represents the direction of the car, -1 = South 0 = West, 1 = North, 2 = East
-    */
-
     protected Car(int nrDoors, double enginePower, Color color, String modelName) {
         this.nrDoors = nrDoors;
         this.enginePower = enginePower;
@@ -28,8 +22,6 @@ public abstract class Car implements Movable {
         this.x = this.y = 0.0;
         stopEngine();
     }
-
-    //protected Car() {}
 
     public int getNrDoors(){
         return nrDoors;
@@ -89,38 +81,6 @@ public abstract class Car implements Movable {
         }
     }
 
-    /*
-    @Override
-    public void move() {
-        switch(direction) {
-            case -1 -> yCoordinate -= currentSpeed;
-            case 0 -> xCoordinate -= currentSpeed;
-            case 1 -> yCoordinate += currentSpeed;
-            case 2 -> xCoordinate += currentSpeed;
-        }
-    }
-
-    @Override
-    public void turnLeft() {
-        switch(direction) {
-            case -1 -> direction = 2;
-            case 0 -> direction = -1;
-            case 1 -> direction = 0;
-            case 2 -> direction = 1;
-        }
-    }
-
-    @Override
-    public void turnRight() {
-        switch(direction) {
-            case -1 -> direction = 0;
-            case 0 -> direction = 1;
-            case 1 -> direction = 2;
-            case 2 -> direction = -1;
-        }
-    }
-     */
-
     public void gas(double amount){
         if(amount < 0 || amount > 1) throw new IllegalArgumentException("Input outside of allowed range [0,1]");
         incrementSpeed(amount);
@@ -142,40 +102,8 @@ public abstract class Car implements Movable {
     }
 
 
-    /*
-
-    protected void incrementSpeed(double amount){
-        currentSpeed += speedFactor() * amount;
-    }
-
-    protected void decrementSpeed(double amount){
-        currentSpeed -= speedFactor() * amount;
-    }
-
-    private double limitInterval(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
-    }
-
-    public void gas(double amount){
-        double oldSpeed = currentSpeed;
-        double validAmount = limitInterval(amount, 0, 1);
-
-        incrementSpeed(validAmount);
-
-        currentSpeed = Math.max(oldSpeed, currentSpeed);
-        currentSpeed = limitInterval(currentSpeed, 0, enginePower);
-    }
-
-    public void brake(double amount){
-        double oldSpeed = currentSpeed;
-        double validAmount = limitInterval(amount, 0, 1);
-
-        decrementSpeed(validAmount);
-
-        currentSpeed = Math.min(oldSpeed, currentSpeed);
-        currentSpeed = limitInterval(currentSpeed, 0, enginePower);
-    }
-
-    */
-
+    // For testing
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public Direction getCurrentDirection() { return currentDirection; }
 }

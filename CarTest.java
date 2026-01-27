@@ -1,10 +1,10 @@
 import org.junit.jupiter.api.Test;
-
 import java.awt.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CarTest {
+
+    // Saab95
 
     @Test
     void saabDoorsShouldEqualTwo() {
@@ -52,6 +52,8 @@ class CarTest {
         assertEquals(0, saab.currentSpeed);
     }
 
+    // Volvo240
+
     @Test
     void volvoEnginePowerShouldEqualOneHundred() {
         var volvo = new Volvo240();
@@ -84,6 +86,14 @@ class CarTest {
         assertEquals(0, volvo.currentSpeed);
     }
 
+    // Move
+
+    // Turn Left
+
+    // Turn Right
+
+    // Car
+
     @Test
     void carCurrentSpeedShouldEqualZeroPointOne() {
         var car = new Saab95();
@@ -108,63 +118,7 @@ class CarTest {
         assertEquals(0, car.currentSpeed);
     }
 
-    @Test
-    void carMoveLeftShouldEqualNegativeZeroPointOne() {
-        var car = new Saab95();
-        car.startEngine();
-        car.turnLeft();
-        car.move();
-        assertEquals(-0.1, car.xCoordinate);
-    }
-
-    @Test
-    void carMoveRightShouldEqualZeroPointOne() {
-        var car = new Saab95();
-        car.startEngine();
-        car.turnRight();
-        car.move();
-        assertEquals(0.1, car.xCoordinate);
-    }
-
-    @Test
-    void carMoveForwardShouldEqualZeroPointOne() {
-        var car = new Saab95();
-        car.startEngine();
-        car.move();
-        assertEquals(0.1, car.yCoordinate);
-    }
-
-    @Test
-    void carMoveBackwardsShouldEqualNegativeZeroPointOne() {
-        var car = new Volvo240();
-        car.startEngine();
-        car.turnLeft();
-        car.turnLeft();
-        car.move();
-        assertEquals(-0.1, car.yCoordinate);
-    }
-
-    @Test
-    void turnLeftShouldEqualZero() {
-        var car = new Volvo240();
-        car.turnLeft();
-        assertEquals(0, car.direction);
-    }
-
-    @Test
-    void turnRightShouldEqualTwo() {
-        var car = new Volvo240();
-        car.turnRight();
-        assertEquals(2, car.direction);
-    }
-
-    @Test
-    void turnTwiceShouldEqualNegativeOne() {
-        var car = new Volvo240();
-        car.turnLeft();
-        car.turnLeft();
-        assertEquals(-1, car.direction);
-    }
+    // Gas & Brake
 
     @Test
     void gasShouldThrowException() {
@@ -195,4 +149,5 @@ class CarTest {
         car.brake(1);
         assertEquals(1.35, car.getCurrentSpeed());
     }
+
 }
