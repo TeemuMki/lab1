@@ -86,12 +86,6 @@ class CarTest {
         assertEquals(0, volvo.currentSpeed);
     }
 
-    // Move
-
-    // Turn Left
-
-    // Turn Right
-
     // Car
 
     @Test
@@ -116,6 +110,124 @@ class CarTest {
         car.gas(1);
         car.stopEngine();
         assertEquals(0, car.currentSpeed);
+    }
+
+    // Move
+
+    @Test
+    void moveNIncreasesY() {
+        Car car = new Volvo240();
+        car.startEngine();
+        car.move();
+
+        assertTrue(car.getY() > 0.0);
+    }
+
+    @Test
+    void moveEIncreasesX() {
+        Car car = new Volvo240();
+        car.turnRight();
+        car.startEngine();
+        car.move();
+
+        assertTrue(car.getX() > 0.0);
+    }
+
+    @Test
+    void moveSDecreasesY() {
+        Car car = new Volvo240();
+        car.turnRight();
+        car.turnRight();
+        car.startEngine();
+        car.move();
+
+        assertTrue(car.getY() < 0.0);
+    }
+
+    @Test
+    void moveWDecreasesX() {
+        Car car = new Volvo240();
+        car.turnLeft();
+        car.startEngine();
+        car.move();
+
+        assertTrue(car.getX() < 0.0);
+    }
+
+    // Turn Left
+
+    @Test
+    void turnLeftFromNToW() {
+        Car car = new Volvo240();
+        car.turnLeft();
+
+        assertSame(Car.Direction.W, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnLeftFromWToS() {
+        Car car = new Volvo240();
+        car.turnLeft();
+        car.turnLeft();
+
+        assertSame(Car.Direction.S, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnLeftFromSToE() {
+        Car car = new Volvo240();
+        car.turnLeft();
+        car.turnLeft();
+        car.turnLeft();
+
+        assertSame(Car.Direction.E, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnLeftFromEToN() {
+        Car car = new Volvo240();
+        car.turnRight();
+        car.turnLeft();
+
+        assertSame(Car.Direction.N, car.getCurrentDirection());
+    }
+
+    // Turn Right
+
+    @Test
+    void turnRightFromNToE() {
+        Car car = new Volvo240();
+        car.turnRight();
+
+        assertSame(Car.Direction.E, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnRightFromEToS() {
+        Car car = new Volvo240();
+        car.turnRight();
+        car.turnRight();
+
+        assertSame(Car.Direction.S, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnRightFromSToW() {
+        Car car = new Volvo240();
+        car.turnRight();
+        car.turnRight();
+        car.turnRight();
+
+        assertSame(Car.Direction.W, car.getCurrentDirection());
+    }
+
+    @Test
+    void turnRightFromWToN() {
+        Car car = new Volvo240();
+        car.turnLeft();
+        car.turnRight();
+
+        assertSame(Car.Direction.N, car.getCurrentDirection());
     }
 
     // Gas & Brake
