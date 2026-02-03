@@ -7,8 +7,8 @@ public abstract class Car implements Movable {
     protected Color color; // Color of the car
     protected String modelName; // The car model name
 
-    protected enum Direction {N, E, S, W}; // Possible directions of the car: North, East, South, West
-    protected Direction currentDirection = Direction.N; // Represents the car's current direction
+    protected enum Direction {N, E, S, W} // Possible directions of the car: North, East, South, West
+    protected Direction currentDirection; // Represents the car's current direction
     protected double x, y; // Represents the cars x and y coordinates
 
     protected Car(int nrDoors, double enginePower, Color color, String modelName) {
@@ -91,7 +91,9 @@ public abstract class Car implements Movable {
         decrementSpeed(amount);
     }
 
-    protected abstract double speedFactor();
+    protected double speedFactor() {
+        return enginePower * 0.01;
+    }
 
     protected void incrementSpeed(double amount){
         currentSpeed = Math.min(getCurrentSpeed() + speedFactor() * amount,enginePower);
@@ -101,6 +103,13 @@ public abstract class Car implements Movable {
         currentSpeed = Math.max(getCurrentSpeed() - speedFactor() * amount,0);
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "modelName = '" + modelName + '\'' +
+                ", color = " + color +
+                '}';
+    }
 
     // For testing
     public double getX() { return x; }

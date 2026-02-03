@@ -16,14 +16,14 @@ class CarTest {
     void saabTurboShouldEqualFalse() {
         var saab = new Saab95();
         saab.setTurboOff();
-        assertFalse(saab.turboOn);
+        assertFalse(saab.getTurbo());
     }
 
     @Test
     void saabTurboShouldEqualTrue() {
         var saab = new Saab95();
         saab.setTurboOn();
-        assertTrue(saab.turboOn);
+        assertTrue(saab.getTurbo());
     }
 
     @Test
@@ -262,4 +262,178 @@ class CarTest {
         assertEquals(1.35, car.getCurrentSpeed());
     }
 
+    @Test
+    void scaniaBedAngleShouldEqualSeventy() {
+        var scania = new Scania();
+        scania.raiseBed(10);
+        assertEquals(10, scania.getAngle());
+    }
+
+    @Test
+    void scaniaBedAngleShouldEqualZero() {
+        var scania = new Scania();
+        scania.lowerBed(10);
+        assertEquals(0, scania.getAngle());
+    }
+
+    @Test
+    void scaniaBedAngleShouldEqualFifty() {
+        var scania = new Scania();
+        scania.raiseBed(10);
+        assertEquals(10, scania.getAngle());
+    }
+
+    @Test
+    void raisingBedWhileMovingShouldDoNothing() {
+        var scania = new Scania();
+        scania.startEngine();
+        scania.raiseBed(10);
+        assertEquals(0, scania.getAngle());
+    }
+
+    @Test
+    void startEngineWhileBedRaisedShouldDoNothing() {
+        var scania = new Scania();
+        scania.raiseBed(10);
+        scania.startEngine();
+        assertEquals(0, scania.getCurrentSpeed());
+    }
+
+    @Test
+    void MoveWithRaisedBedShouldDoNothing() {
+        var scania = new Scania();
+        scania.raiseBed(10);
+        scania.startEngine();
+        scania.move();
+        assertEquals(0, scania.getY());
+    }
+
+    @Test
+    void scaniaMoveShouldFunctionNormally() {
+        var scania = new Scania();
+        scania.startEngine();
+        scania.move();
+        assertEquals(0.1, scania.getY());
+    }
+
+    @Test
+    void loadNUnloadBed() {
+        var man = new MAN(6);
+        var car1 = new Saab95();
+        var car2 = new Saab95();
+        var car3 = new Volvo240();
+        var car4 = new Volvo240();
+        var car5 = new Volvo240();
+        man.lowerRamp();
+        man.loadBed(car1);
+        man.loadBed(car2);
+        man.loadBed(car3);
+        man.loadBed(car4);
+        man.loadBed(car5);
+        assertEquals(5, man.getAmountOfCars());
+    }
+
+    @Test
+    void shouldNotLoadCarThatIsFarAway() {
+        var man = new MAN(4);
+        var car = new Saab95();
+        car.startEngine();
+        car.setTurboOn();
+        car.gas(1);
+        car.gas(1);
+        car.move();
+        man.lowerRamp();
+        man.loadBed(car);
+        assertEquals(0, man.getAmountOfCars());
+    }
+
+    @Test
+    void unloadAll() {
+        var man = new MAN(4);
+        var car1 = new Saab95();
+        var car2 = new Saab95();
+        var car3 = new Volvo240();
+        var car4 = new Volvo240();
+        man.lowerRamp();
+        man.loadBed(car1);
+        man.loadBed(car2);
+        man.loadBed(car3);
+        man.loadBed(car4);
+        man.unloadBed(4);
+        assertEquals(0, man.getAmountOfCars());
+    }
+
+    @Test
+    void positionShouldUpdateForAllCars() {
+        var man = new MAN(4);
+        var car1 = new Volvo240();
+        man.lowerRamp();
+        man.loadBed(car1);
+        man.raiseRamp();
+        man.startEngine();
+        man.gas(1);
+        man.gas(1);
+        man.move();
+        man.move();
+        man.unloadBed(1);
+        assertEquals(car1.getY(), man.getY());
+    }
+
+    @Test
+    void lowerRampWhileDrivingShouldNotWork() {
+        var man = new MAN(3);
+        man.lowerRamp();
+        assertFalse(man.isDrivable());
+    }
+
+    @Test
+    void unloadedCarsShouldLineupInRow() {
+        var man = new MAN(4);
+        var car1 = new Saab95();
+        var car2 = new Volvo240();
+        var car3 = new Saab95();
+        var car4 = new Volvo240();
+        man.lowerRamp();
+        man.loadBed(car1);
+        man.loadBed(car2);
+        man.loadBed(car3);
+        man.loadBed(car4);
+        man.unloadBed(4);
+        assertEquals(-1, car1.getY());
+        assertEquals(-2, car2.getY());
+        assertEquals(-3, car3.getY());
+        assertEquals(-4, car4.getY());
+    }
+
+    @Test
+    void loweredRampShouldNotBeDrivable() {
+        var man = new MAN(4);
+        man.lowerRamp();
+        man.startEngine();
+        assertEquals(0, man.getCurrentSpeed());
+    }
+
+    @Test
+    void getCarShouldEqualSameCar() {
+        var man = new MAN(4);
+        var car1 = new Saab95();
+        man.lowerRamp();
+        man.loadBed(car1);
+        assertEquals(car1, man.getCar(0));
+    }
+
+    @Test
+    void workshopTesting() {
+        Workshop<Car> workshop = new Workshop<>(4);
+        var car1 = new Saab95();
+        var car2 = new Volvo240();
+        var car3 = new Scania();
+        var car4 = new MAN(4);
+        workshop.add(car1);
+        workshop.add(car2);
+        workshop.add(car3);
+        workshop.add(car4);
+        workshop.remove(car4);
+        assertEquals("This car is not in storage", workshop.lookup(car4));
+    }
 }
