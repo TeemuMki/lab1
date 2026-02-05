@@ -9,6 +9,10 @@ public class Saab95 extends Car{
         turboOn = false;
     }
 
+    public boolean getTurbo(){
+        return turboOn;
+    }
+
     public void setTurboOn(){
 	    turboOn = true;
     }

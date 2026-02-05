@@ -8,6 +8,11 @@ public abstract class Truck extends Car{
 
     abstract protected boolean isDrivable();
 
+    protected boolean isStationary() { return currentSpeed == 0; }
+
+    public abstract void raiseBed();
+    public abstract void lowerBed();
+
     @Override
     public void startEngine() {
         if(isDrivable()) super.startEngine();
@@ -17,4 +22,5 @@ public abstract class Truck extends Car{
     public void gas(double amount) {
         if(isDrivable()) super.gas(amount);
     }
+
 }

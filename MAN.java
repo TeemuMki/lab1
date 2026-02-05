@@ -2,19 +2,20 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class MAN extends Truck {
+
     private final ArrayList<Car> truckBed;
     private final int maxCapacity;
     private boolean loadable;
 
     public MAN(int capacity) {
+        if (capacity < 0) throw new IllegalArgumentException("Negative capacity not allowed");
         super(2,200, Color.black, "MAN");
         this.truckBed = new ArrayList<>();
         loadable = false;
         this.maxCapacity = capacity;
-        stopEngine();
     }
 
-    public int getAmountOfCars() {
+    public int getAmountOfLoadedCars() {
         return truckBed.size();
     }
 
@@ -39,12 +40,14 @@ public class MAN extends Truck {
         }
     }
 
-    public void lowerRamp() {
-        if(getCurrentSpeed() == 0) loadable = true;
+    @Override
+    public void lowerBed() {
+        if(isStationary()) loadable = true;
     }
 
-    public void raiseRamp() {
-        loadable = false;
+    @Override
+    public void raiseBed() {
+        if(isStationary()) loadable = false;
     }
 
     @Override
