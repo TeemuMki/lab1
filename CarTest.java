@@ -262,75 +262,196 @@ class CarTest {
         assertEquals(1.35, car.getCurrentSpeed());
     }
 
+    // isStationary
+
     @Test
-    void scaniaBedAngleShouldEqualSeventy() {
+    void isStationaryShouldEqualTrue() {
+        var scania = new Scania();
+
+        assertTrue(scania.isStationary());
+    }
+
+    @Test
+    void isStationaryShouldEqualFalse() {
+        var scania = new Scania();
+        scania.startEngine();
+
+        assertFalse(scania.isStationary());
+    }
+
+    // Truck
+
+    @Test
+    void truckStartEngineShouldWorkIfIsDrivable() {
+        var scania = new Scania();
+        assertTrue(scania.isDrivable());
+        scania.startEngine();
+
+        assertEquals(0.1, scania.getCurrentSpeed());
+    }
+
+    @Test
+    void truckGasShouldWorkIfIsDrivable() {
+        var scania = new Scania();
+        assertTrue(scania.isDrivable());
+        scania.gas(1.0);
+
+        assertTrue(scania.getCurrentSpeed() > 0.0);
+    }
+
+    @Test
+    void truckStartEngineShouldDoNothingIfNotDrivable() {
+        var scania = new Scania();
+        scania.raiseBed();
+        assertFalse(scania.isDrivable());
+        scania.startEngine();
+
+        assertEquals(0.0, scania.getCurrentSpeed());
+    }
+
+    @Test
+    void truckGasShouldDoNothingIfNotDrivable() {
+        var scania = new Scania();
+        scania.raiseBed();
+        scania.gas(1.0);
+
+        assertFalse(scania.isDrivable());
+        assertEquals(0.0, scania.getCurrentSpeed());
+    }
+
+    // Scania
+
+    @Test
+    void scaniaRaiseBedNoArgShouldIncreaseAngleByOne() {
+        var scania = new Scania();
+        scania.raiseBed();
+
+        assertEquals(1, scania.getAngle());
+    }
+
+    @Test
+    void scaniaRaiseBedWithArg() {
         var scania = new Scania();
         scania.raiseBed(10);
+
         assertEquals(10, scania.getAngle());
     }
 
     @Test
-    void scaniaBedAngleShouldEqualZero() {
+    void scaniaLowerBedNoArgShouldLowerAngleByOne() {
         var scania = new Scania();
+        scania.raiseBed();
+        scania.lowerBed();
+
+        assertEquals(0, scania.getAngle());
+    }
+
+    @Test
+    void scaniaLowerBedWithArg() {
+        var scania = new Scania();
+        scania.raiseBed(10);
         scania.lowerBed(10);
+
         assertEquals(0, scania.getAngle());
     }
 
     @Test
-    void scaniaBedAngleShouldEqualFifty() {
+    void scaniaRaiseBedWhileNotStationaryShouldDoNothing() {
         var scania = new Scania();
+        scania.startEngine();
+        assertFalse(scania.isStationary());
         scania.raiseBed(10);
+
+        assertEquals(0, scania.getAngle());
+    }
+
+    @Test
+    void scaniaLowerBedWhileBedAngleIsZeroShouldDoNothing() {
+        var scania = new Scania();
+        scania.lowerBed();
+
+        assertEquals(0, scania.getAngle());
+    }
+
+    @Test
+    void scaniaLowerBedWhileMovingShouldDoNothing() {
+        var scania = new Scania();
+        scania.startEngine();
+        scania.setAngle(10);
+        scania.lowerBed(10);
+
         assertEquals(10, scania.getAngle());
     }
 
     @Test
-    void raisingBedWhileMovingShouldDoNothing() {
-        var scania = new Scania();
-        scania.startEngine();
-        scania.raiseBed(10);
-        assertEquals(0, scania.getAngle());
-    }
-
-    @Test
-    void startEngineWhileBedRaisedShouldDoNothing() {
+    void scaniaRaiseBedShouldMakeScaniaNotDrivable() {
         var scania = new Scania();
         scania.raiseBed(10);
-        scania.startEngine();
-        assertEquals(0, scania.getCurrentSpeed());
+
+        assertFalse(scania.isDrivable());
     }
 
     @Test
-    void MoveWithRaisedBedShouldDoNothing() {
+    void scaniaRaiseBedNegativeAmountShouldThrowException() {
         var scania = new Scania();
-        scania.raiseBed(10);
-        scania.startEngine();
-        scania.move();
-        assertEquals(0, scania.getY());
+
+        assertThrowsExactly(IllegalArgumentException.class, () -> scania.raiseBed(-1));
     }
 
     @Test
-    void scaniaMoveShouldFunctionNormally() {
+    void scaniaLowerBedNegativeAmountShouldThrowException() {
         var scania = new Scania();
-        scania.startEngine();
-        scania.move();
-        assertEquals(0.1, scania.getY());
+        scania.raiseBed();
+
+        assertThrowsExactly(IllegalArgumentException.class, () -> scania.lowerBed(-1));
+    }
+
+    // MAN
+
+    @Test
+    void manLowerBedWhileIsStationaryShouldMakeCarLoadable() {
+        var man = new MAN(10);
+        assertFalse(man.getLoadable());
+        man.lowerBed();
+
+        assertTrue(man.getLoadable());
     }
 
     @Test
-    void loadNUnloadBed() {
+    void manRaiseBedWhileIsStationaryShouldMakeCarNotLoadable() {
+        var man = new MAN(10);
+        man.lowerBed();
+        assertTrue(man.getLoadable());
+        man.raiseBed();
+
+        assertFalse(man.getLoadable());
+    }
+
+    @Test
+    void manLowerBedWhileNotStationaryShouldDoNothing() {
+        var man = new MAN(10);
+        man.startEngine();
+        assertFalse(man.getLoadable());
+        man.lowerBed();
+
+        assertFalse(man.getLoadable());
+    }
+
+    @Test
+    void loadBed() {
         var man = new MAN(6);
         var car1 = new Saab95();
         var car2 = new Saab95();
         var car3 = new Volvo240();
         var car4 = new Volvo240();
         var car5 = new Volvo240();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car1);
         man.loadBed(car2);
         man.loadBed(car3);
         man.loadBed(car4);
         man.loadBed(car5);
-        assertEquals(5, man.getAmountOfCars());
+        assertEquals(5, man.getAmountOfLoadedCars());
     }
 
     @Test
@@ -342,9 +463,9 @@ class CarTest {
         car.gas(1);
         car.gas(1);
         car.move();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car);
-        assertEquals(0, man.getAmountOfCars());
+        assertEquals(0, man.getAmountOfLoadedCars());
     }
 
     @Test
@@ -354,22 +475,22 @@ class CarTest {
         var car2 = new Saab95();
         var car3 = new Volvo240();
         var car4 = new Volvo240();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car1);
         man.loadBed(car2);
         man.loadBed(car3);
         man.loadBed(car4);
         man.unloadBed(4);
-        assertEquals(0, man.getAmountOfCars());
+        assertEquals(0, man.getAmountOfLoadedCars());
     }
 
     @Test
     void positionShouldUpdateForAllCars() {
         var man = new MAN(4);
         var car1 = new Volvo240();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car1);
-        man.raiseRamp();
+        man.raiseBed();
         man.startEngine();
         man.gas(1);
         man.gas(1);
@@ -380,20 +501,13 @@ class CarTest {
     }
 
     @Test
-    void lowerRampWhileDrivingShouldNotWork() {
-        var man = new MAN(3);
-        man.lowerRamp();
-        assertFalse(man.isDrivable());
-    }
-
-    @Test
     void unloadedCarsShouldLineupInRow() {
         var man = new MAN(4);
         var car1 = new Saab95();
         var car2 = new Volvo240();
         var car3 = new Saab95();
         var car4 = new Volvo240();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car1);
         man.loadBed(car2);
         man.loadBed(car3);
@@ -406,9 +520,34 @@ class CarTest {
     }
 
     @Test
+    void lastInFirstOut() {
+        var man = new MAN(4);
+        var car1 = new Saab95();
+        var car2 = new Volvo240();
+        var car3 = new Saab95();
+        var car4 = new Volvo240();
+
+        man.lowerBed();
+        man.loadBed(car1);
+        man.loadBed(car2);
+        man.loadBed(car3);
+        man.loadBed(car4);
+
+        man.unloadBed(1);
+        assertFalse(man.getTruckBed().contains(car4));
+        man.unloadBed(1);
+        assertFalse(man.getTruckBed().contains(car3));
+        man.unloadBed(1);
+        assertFalse(man.getTruckBed().contains(car2));
+        man.unloadBed(1);
+        assertFalse(man.getTruckBed().contains(car1));
+        assertEquals(0, man.getTruckBed().size());
+    }
+
+    @Test
     void loweredRampShouldNotBeDrivable() {
         var man = new MAN(4);
-        man.lowerRamp();
+        man.lowerBed();
         man.startEngine();
         assertEquals(0, man.getCurrentSpeed());
     }
@@ -417,9 +556,38 @@ class CarTest {
     void getCarShouldEqualSameCar() {
         var man = new MAN(4);
         var car1 = new Saab95();
-        man.lowerRamp();
+        man.lowerBed();
         man.loadBed(car1);
         assertEquals(car1, man.getCar(0));
+    }
+
+    @Test
+    void loadBedWithInstanceOfTruckShouldDoNothing() {
+        var man = new MAN(2);
+        var truck = new MAN(1);
+        man.loadBed(truck);
+
+        assertFalse(man.getTruckBed().contains(truck));
+    }
+
+    @Test
+    void loadBedAfterMaxCapacityIsReachedShouldDoNothing() {
+        var man = new MAN(1);
+        var car = new Saab95();
+        var car2 = new Saab95();
+        man.lowerBed();
+        man.loadBed(car);
+        assertEquals(1, man.getTruckBed().size());
+        man.loadBed(car2);
+
+        assertEquals(1, man.getTruckBed().size());
+    }
+
+    // Workshop
+
+    @Test
+    void negativeWorkshopCapacityShouldThrowException() {
+        assertThrowsExactly(IllegalArgumentException.class, () -> new Workshop<Car>(-1));
     }
 
     @Test
@@ -436,4 +604,16 @@ class CarTest {
         workshop.remove(car4);
         assertEquals("This car is not in storage", workshop.lookup(car4));
     }
+
+    @Test
+    void getAmountOfCarsInWorkshop() {
+        Workshop<Car> workshop = new Workshop<>(10);
+        var volvo240 = new Volvo240();
+        var saab95 = new Saab95();
+        workshop.add(volvo240);
+        workshop.add(saab95);
+
+        assertEquals(2, workshop.getAmountOfCarsInWorkshop());
+    }
+
 }

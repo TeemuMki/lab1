@@ -1,9 +1,10 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MAN extends Truck {
 
-    private final ArrayList<Car> truckBed;
+    protected final ArrayList<Car> truckBed;
     private final int maxCapacity;
     private boolean loadable;
 
@@ -30,12 +31,12 @@ public class MAN extends Truck {
     }
 
     public void unloadBed(int amount) {
-        Car temp;
         if(loadable && amount <= truckBed.size()) {
-            for(int i = amount - 1; i >= 0; i--) {
-                temp = truckBed.get(i);
-                temp.y -= i+1;
-                truckBed.remove(i);
+            for(int i = 0; i < amount; i++) {
+                int lastIdx = truckBed.size() - 1;
+                Car temp = truckBed.get(lastIdx);
+                temp.y -= lastIdx + 1;
+                truckBed.remove(lastIdx);
             }
         }
     }
@@ -63,4 +64,9 @@ public class MAN extends Truck {
             car.y = this.y;
         }
     }
+
+    // For testing
+    protected List<Car> getTruckBed() { return truckBed; }
+    protected boolean getLoadable() { return loadable; }
+
 }
