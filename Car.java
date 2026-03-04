@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Random;
 
 public abstract class Car implements Movable {
     protected int nrDoors; // Number of doors on the car
@@ -10,6 +11,7 @@ public abstract class Car implements Movable {
     protected enum Direction {N, E, S, W} // Possible directions of the car: North, East, South, West
     protected Direction currentDirection; // Represents the car's current direction
     protected double x, y; // Represents the cars x and y coordinates
+    protected Random random = new Random(); // Random generator for starting x, y coordinates
 
     protected Car(int nrDoors, double enginePower, Color color, String modelName) {
         this.nrDoors = nrDoors;
@@ -18,8 +20,10 @@ public abstract class Car implements Movable {
         this.modelName = modelName;
         this.currentSpeed = 0;
 
-        this.currentDirection = Direction.N;
-        this.x = this.y = 0.0;
+        Direction directions[] = Direction.values();
+        this.currentDirection = directions[random.nextInt(directions.length)];
+        this.x = random.nextInt(0,500);
+        this.y = random.nextInt(0, 500);
         stopEngine();
     }
 
@@ -112,7 +116,7 @@ public abstract class Car implements Movable {
     }
 
     // For testing
-    public double getX() { return x; }
-    public double getY() { return y; }
+    public int getX() { return (int) x; }
+    public int getY() { return (int) y; }
     public Direction getCurrentDirection() { return currentDirection; }
 }
