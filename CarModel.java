@@ -1,115 +1,137 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 public class CarModel {
-    private ArrayList<DrawableImage> images;
-    private Workshop<Volvo240> volvo240Workshop;
-    private Random random = new Random();
-    private BufferedImage saabImage;
-    private BufferedImage volvoImage;
-    private BufferedImage scaniaImage;
-    protected BufferedImage volvoWorkshopImage;
+    private final ArrayList<Car> cars;
+    private final Workshop<Volvo240> volvo240Workshop;
+    private final Random random = new Random();
+    MotorVehicleFactory factory = new MotorVehicleFactory();
 
-    public CarModel() {
-        try {
-            scaniaImage = (ImageIO.read(DrawPanel.class.getResourceAsStream("pics/Scania.jpg")));
-            volvoImage = (ImageIO.read(DrawPanel.class.getResourceAsStream("pics/Volvo240.jpg")));
-            saabImage = (ImageIO.read(DrawPanel.class.getResourceAsStream("pics/Saab95.jpg")));
-            volvoWorkshopImage = ImageIO.read(DrawPanel.class.getResourceAsStream("pics/VolvoBrand.jpg"));
-            images = new ArrayList<>();
-            volvo240Workshop = new Workshop<>(10);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public CarModel(int cap) {
+            volvo240Workshop = new Workshop<>(cap);
+            cars = new ArrayList<>();
+
+    }
+
+    private final List<ModelObserver> observers = new ArrayList<>();
+
+    public void addObserver(ModelObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(ModelObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyObserver() {
+        for(ModelObserver obs : observers) {
+            obs.actOnModelUpdate();
         }
+    }
+
+    Point getCarDim() {
+        if(!observers.isEmpty()) return observers.getFirst().getCarDimension();
+        throw new RuntimeException();
+    }
+
+    Point getWorkshopDim() {
+        if(!observers.isEmpty()) return observers.getFirst().getWorkshopDimension();
+        return null;
+    }
+
+    Point getDrawPanelDim() {
+        if(!observers.isEmpty()) return observers.getFirst().getDrawpanelDimension();
+        return null;
     }
 
     // Calls the gas method for each car once
     void gas(int amount) {
         double gas = ((double) amount) / 100;
-        for (DrawableImage img : images) {
-            img.getCar().gas(gas);
+        for (Car car : cars) {
+            car.gas(gas);
         }
     }
     // calls the brake method for each car
     void brake(int amount) {
         double brake = ((double) amount) / 100;
-        for (DrawableImage img : images) {
-            img.getCar().brake(brake);
+        for (Car car : cars) {
+            car.brake(brake);
         }
     }
 
     void setTurboOn() {
-        for(DrawableImage img : images) {
-            if(img.getCar() instanceof Saab95 saab) {
+        for(Car car : cars) {
+            if(car instanceof Saab95 saab) {
                 saab.setTurboOn();
             }
         }
     }
 
     void setTurboOff() {
-        for(DrawableImage img : images) {
-            if(img.getCar() instanceof Saab95 saab) {
+        for(Car car : cars) {
+            if(car instanceof Saab95 saab) {
                 saab.setTurboOff();
             }
         }
     }
 
     public void lowerBed() {
-        for(DrawableImage img : images) {
-            if(img.getCar() instanceof  Scania scania) {
+        for(Car car : cars) {
+            if(car instanceof  Scania scania) {
                 scania.lowerBed();
             }
         }
     }
 
     public void raiseBed() {
-        for(DrawableImage img : images) {
-            if(img.getCar() instanceof Scania scania) {
+        for(Car car: cars) {
+            if(car instanceof Scania scania) {
                 scania.raiseBed();
             }
         }
     }
 
     public void stopAllCars() {
-        for(DrawableImage img : images) {
-            img.getCar().stopEngine();
+        for(Car car : cars) {
+            car.stopEngine();
         }
     }
 
     public void startAllCars() {
-        for(DrawableImage img : images) {
-            if(img.getCar().currentSpeed == 0) {
-                img.getCar().startEngine();
+        for(Car car : cars) {
+            if(car.currentSpeed == 0) {
+                car.startEngine();
             }
         }
     }
 
-    public ArrayList<DrawableImage> getImages() {
-        return images;
-    }
-
-    public void addImage(DrawableImage img) {
-        if(images.size() < 10) images.add(img);
+    public ArrayList<Car> getCars() {
+        return cars;
     }
 
     public void addCar() {
-        if(images.size() < 10) {
+        if(cars.size() < 10) {
             int n = random.nextInt(0,3);
             switch(n) {
-                    case 0 -> images.add(new DrawableImage(new Volvo240(), volvoImage));
-                    case 1 -> images.add(new DrawableImage(new Saab95(), saabImage));
-                    case 2 -> images.add(new DrawableImage(new Scania(), scaniaImage));
+                    case 0 -> cars.add(factory.buildVolvo());
+                    case 1 -> cars.add(factory.buildSaab());
+                    case 2 -> cars.add(factory.buildScania());
             }
+            notifyObserver();
         }
     }
 
     public void removeCar() {
-        if(!images.isEmpty()) {
-            int n = random.nextInt(0, images.size());
-            images.remove(n);
+        if(!cars.isEmpty()) {
+            int n = random.nextInt(0, cars.size());
+            cars.remove(n);
+            notifyObserver();
         }
     }
 
@@ -117,7 +139,28 @@ public class CarModel {
         return volvo240Workshop;
     }
 
-    public BufferedImage getVolvoWorkshopImage() {
-        return volvoWorkshopImage;
+
+    public void updateCars() {
+        Iterator<Car> it = cars.iterator();
+        while(it.hasNext()) {
+            Car car = it.next();
+            car.move();
+            Point carDim = getCarDim();
+            Point workDim = getWorkshopDim();
+            Point drawPanelDim = getDrawPanelDim();
+            if(car.getX() < 0 || car.getX() > drawPanelDim.getX() - carDim.getX()) {
+                car.turnRight(); car.turnRight();
+            }
+            if(car.getY() < 0 || car.getY() > drawPanelDim.getY() - carDim.getY()) {
+                car.turnRight(); car.turnRight();
+            }
+            Rectangle workRect = new Rectangle(300, 300,(int) workDim.getX(),(int) workDim.getY());
+            Rectangle carRect = new Rectangle(car.getX(), car.getY(),(int) carDim.getX(), (int) carDim.getY());
+            if(carRect.intersects(workRect) && car instanceof  Volvo240 volvo) {
+                volvo240Workshop.add(volvo);
+                it.remove();
+            }
+        }
+        notifyObserver();
     }
 }

@@ -22,5 +22,4 @@ public abstract class Truck extends Car{
     public void gas(double amount) {
         if(isDrivable()) super.gas(amount);
     }
-
 }

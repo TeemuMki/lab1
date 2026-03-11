@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MAN extends Truck {
 
-    protected final ArrayList<Car> truckBed;
+    private final ArrayList<Car> truckBed;
     private final int maxCapacity;
     private boolean loadable;
 
@@ -32,11 +32,10 @@ public class MAN extends Truck {
 
     public void unloadBed(int amount) {
         if(loadable && amount <= truckBed.size()) {
-            for(int i = 0; i < amount; i++) {
-                int lastIdx = truckBed.size() - 1;
-                Car temp = truckBed.get(lastIdx);
-                temp.y -= lastIdx + 1;
-                truckBed.remove(lastIdx);
+            for(int i = truckBed.size() - 1; i >= 0; i--) {
+                Car temp = truckBed.get(i);
+                temp.y -= i + 1;
+                truckBed.remove(i);
             }
         }
     }

@@ -1,7 +1,6 @@
 import java.awt.*;
 
 public class Scania extends Truck {
-
     private int bedAngle;
 
     public Scania() {
@@ -36,5 +35,4 @@ public class Scania extends Truck {
 
     // For testing
     protected void setAngle(int angle) { bedAngle = angle ; }
-
 }

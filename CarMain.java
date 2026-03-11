@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class CarMain {
     static void main(String[] args) {
-        CarModel m = new CarModel();
+        CarModel m = new CarModel(10);
         CarView v = new CarView(m);
         CarController c = new CarController(m, v);
 

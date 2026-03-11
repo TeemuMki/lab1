@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public abstract class Car implements Movable {
@@ -20,7 +21,7 @@ public abstract class Car implements Movable {
         this.modelName = modelName;
         this.currentSpeed = 0;
 
-        Direction directions[] = Direction.values();
+        Direction[] directions = Direction.values();
         this.currentDirection = directions[random.nextInt(directions.length)];
         this.x = random.nextInt(0,500);
         this.y = random.nextInt(0, 500);
